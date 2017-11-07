@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Unisharp\JWT\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -73,7 +73,7 @@ class JWTRefresh
         } catch (TokenExpiredException $e) {
             // If the token is expired, then it will be refreshed and added to the headers
             try {
-                return auth()->refresh();
+                return auth('laravel.jwt')->refresh();
             } catch (TokenExpiredException $e) {
                 throw new UnauthorizedHttpException('jwt-auth', 'Refresh token has expired.');
             }

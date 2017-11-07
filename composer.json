@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^5.6.4 || ^7.0",
-        "tymon/jwt-auth": "^1.0",
+        "tymon/jwt-auth": "^1.0.0-rc",
         "illuminate/support": ">=5.0.0",
         "guzzlehttp/guzzle": "^6.2",
         "mockery/mockery": "0.9.*"
@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Unisharp\\JWT": "src/"
+            "Unisharp\\JWT\\": "src/"
         }
     },
     "extra": {

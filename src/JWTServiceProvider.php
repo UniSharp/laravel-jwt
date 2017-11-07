@@ -3,10 +3,21 @@
 namespace Unisharp\JWT;
 
 use Illuminate\Support\ServiceProvider;
+use Unisharp\JWT\Auth\Guards\JWTAuthGuard;
+use Unisharp\JWT\Http\middleware\JWTRefresh;
 
 class JWTServiceProvider extends ServiceProvider
 {
     protected $configs;
+
+    /**
+     * The middleware aliases.
+     *
+     * @var array
+     */
+    protected $middlewareAliases = [
+        'laravel.jwt' => JWTRefresh::class,
+    ];
 
     /**
      * Boot the services for the application.
@@ -17,6 +28,8 @@ class JWTServiceProvider extends ServiceProvider
     {
         $this->bootConfig();
         $this->loadConfig();
+        $this->extendAuthGuard();
+        $this->registerMiddleware();
     }
 
     /**
@@ -26,11 +39,7 @@ class JWTServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('uni.jwt', function ($app) {
-            $configs = $this->configs;
-
-            return;
-        });
+        //
     }
 
     /**
@@ -48,6 +57,20 @@ class JWTServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register middleware.
+     *
+     * @return void
+     */
+    protected function registerMiddleware()
+    {
+        if ($this->isLumen()) {
+            $this->app->routeMiddleware($this->$middlewareAliases);
+        } else {
+            $this->aliasMiddleware();
+        }
+    }
+
+    /**
      * Load configure.
      *
      * @return void
@@ -58,12 +81,46 @@ class JWTServiceProvider extends ServiceProvider
     }
 
     /**
-     * Get the services provided by the provider.
+     * Extend auth guard.
      *
-     * @return array
+     * @return void
      */
-    public function provides()
+    protected function extendAuthGuard()
     {
-        return ['uni.jwt'];
+        $this->app['auth']->extend('jwt-auth', function ($app, $name, array $config) {
+            $guard = new JWTAuthGuard(
+                $app['tymon.jwt'],
+                $app['auth']->createUserProvider($config['provider']),
+                $app['request']
+            );
+
+            $app->refresh('request', $guard, 'setRequest');
+
+            return $guard;
+        });
+    }
+
+    /**
+     * Return isLumen.
+     *
+     * @return boolean
+     */
+    protected function isLumen()
+    {
+        return str_contains($this->app->version(), 'Lumen');
+    }
+
+    /**
+     * Alias the middleware.
+     *
+     * @return void
+     */
+    protected function aliasMiddleware()
+    {
+        $router = $this->app['router'];
+        $method = method_exists($router, 'aliasMiddleware') ? 'aliasMiddleware' : 'middleware';
+        foreach ($this->middlewareAliases as $alias => $middleware) {
+            $router->$method($alias, $middleware);
+        }
     }
 }

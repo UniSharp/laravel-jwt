@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Auth\Guards;
+namespace Unisharp\JWT\Auth\Guards;
 
 use BadMethodCallException;
 use Illuminate\Auth\GuardHelpers;
@@ -10,11 +10,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\JWT;
-use App\User;
-use App\Token;
-use App\Events\TokenRefreshed;
 
-class JwtAuthGuard implements Guard
+class JWTAuthGuard implements Guard
 {
     use GuardHelpers;
 
@@ -59,83 +56,25 @@ class JwtAuthGuard implements Guard
             return $this->user;
         }
 
-        // get token
         $token = $this->jwt->setRequest($this->request)->getToken();
         if (!$token) {
             return null;
         }
 
-        // set cached freshed token
+        // get cached freshed token if exists for concurrency requests 
         if ($this->getCachedToken()) {
             $this->jwt = $this->jwt->setToken($this->getCachedToken());
         }
 
-        // check token
-        if ($this->jwt->check()) {
-            return $this->user = $this->generateUserByClaims($this->getClaims());
+        // token validation
+        if ($this->jwt->setRequest($this->request)->getToken() &&
+            ($payload = $this->jwt->check(true)) &&
+            $this->validateSubject()
+        ) {
+            return $this->user = $this->provider->retrieveById($payload['sub']);
         }
 
         return $this->user;
-    }
-
-    /**
-     * Validate a user's credentials.
-     *
-     * @param array $credentials
-     *
-     * @return bool
-     */
-    public function validate(array $credentials = [])
-    {
-        throw new BadMethodCallException("Method validate is not implemented.");
-    }
-
-    /**
-     * Create a token for a user.
-     *
-     * @return string
-     */
-    public function login(array $claims)
-    {
-        $user = $this->generateUserByClaims($claims);
-        $this->setUser($user);
-
-        return $user;
-    }
-
-    public function generateUserByClaims(array $claims)
-    {
-        if (!array_key_exists('sub', $claims)) {
-            throw new Exception('sub key is required');
-        }
-        $sub = $claims['sub'];
-        unset($claims['sub']);
-        $user = new User;
-        $user->uid = $sub;
-        foreach ($claims as $key => $value) {
-            $user->{$key} = $value;
-        }
-
-        return $user;
-    }
-
-    public function generateTokenByClaims(array $claims)
-    {
-        $factory = new JWTFactory;
-        foreach ($claims as $key => $value) {
-            $factory = $factory->{$key} = $value;
-        }
-
-        return JWTAuth::encode($factory->make());
-    }
-
-    public function getClaims()
-    {
-        return [
-            'sub' => $this->jwt->payload()->get('sub'),
-            'name' => $this->jwt->payload()->get('name'),
-            'is_admin' => $this->jwt->payload()->get('is_admin')
-        ];
     }
 
     /**
@@ -151,6 +90,61 @@ class JwtAuthGuard implements Guard
     }
 
     /**
+     * Attempt to authenticate the user using the given credentials and return the token.
+     *
+     * @param  array  $credentials
+     * @param  bool  $login
+     *
+     * @return bool|string
+     */
+    public function attempt(array $credentials = [], $login = true)
+    {
+        $this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
+
+        if ($this->hasValidCredentials($user, $credentials)) {
+            return $login ? $this->login($user) : true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate a user's credentials.
+     *
+     * @param  array  $credentials
+     *
+     * @return bool
+     */
+    public function validate(array $credentials = [])
+    {
+        return (bool) $this->attempt($credentials, false);
+    }
+
+    public function getTokenByClaims(array $claims)
+    {
+        $factory = new JWTFactory;
+        foreach ($claims as $key => $value) {
+            $factory = $factory->{$key} = $value;
+        }
+
+        return JWTAuth::encode($factory->make());
+    }
+
+    /**
+     * Create a token for a user.
+     *
+     * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $user
+     *
+     * @return string
+     */
+    public function login(JWTSubject $user)
+    {
+        $this->setUser($user);
+
+        return $this->jwt->fromUser($user);
+    }
+
+    /**
      * Logout the user.
      *
      * @param bool $forceForever
@@ -159,22 +153,22 @@ class JwtAuthGuard implements Guard
      */
     public function logout($forceForever = true)
     {
-        // for leishan SSO only
-        Token::where('jwt_hash', md5($this->getToken()))->delete();
-
         $this->invalidate($forceForever);
         $this->user = null;
         $this->jwt->unsetToken();
     }
 
+    /**
+     * Return cached token.
+     *
+     * @return string
+     */
     public function getCachedToken()
     {
-        // retrun cached token
         if ($this->cachedToken) {
             return $this->cachedToken;
         }
 
-        // generate token key
         $key = md5($this->jwt->parser()->parseToken());
         $this->cachedToken = \Cache::get($key);
 
@@ -188,10 +182,8 @@ class JwtAuthGuard implements Guard
      */
     public function refresh()
     {
-        // get cached token
         $cache = $this->getCachedToken();
 
-        // return cached token
         if ($cache) {
             return $cache;
         }
@@ -199,15 +191,11 @@ class JwtAuthGuard implements Guard
         // refresh token
         $token = $this->jwt->parser()->parseToken();
         $key = md5($token);
-
         $refresh = \JWTAuth::refresh($token);
         $expiresAt = \Carbon\Carbon::now()
-            ->addSeconds(config('jwt.cache_ttl'));
+            ->addSeconds(config('laravel_jwt.cache_ttl'));
 
-        // for leishan SSO only
-        $this->updateLeishanToken($key, $refresh);
-
-        // cache token key
+        // cache newly refreshed token
         \Cache::put($key, $refresh, $expiresAt);
         return $refresh;
     }
@@ -341,17 +329,31 @@ class JwtAuthGuard implements Guard
         throw new BadMethodCallException("Method [$method] does not exist.");
     }
 
-    // for leishan SSO only
-    protected function updateLeishanToken($hash, $new)
+    /**
+     * Determine if the user matches the credentials.
+     *
+     * @param  mixed  $user
+     * @param  array  $credentials
+     * @return bool
+     */
+    protected function hasValidCredentials($user, $credentials)
     {
-        $token = Token::where('jwt_hash', $hash)->first();
-        if (!$token) {
-            return false;
-        }
-        $token->jwt_hash = md5($new);
-        $token->jwt_token = $new;
-        $token->save();
+        return !is_null($user) && $this->provider->validateCredentials($user, $credentials);
+    }
 
-        event(new TokenRefreshed($token));
+    /**
+     * Ensure the JWTSubject matches what is in the token.
+     *
+     * @return  bool
+     */
+    protected function validateSubject()
+    {
+        // If the provider doesn't have the necessary method
+        // to get the underlying model name then allow.
+        if (!method_exists($this->provider, 'getModel')) {
+            return true;
+        }
+
+        return $this->jwt->checkProvider($this->provider->getModel());
     }
 }
