@@ -1,0 +1,36 @@
+{
+    "name": "unisharp/laravel-jwt",
+    "description": "A jwt package for reisssuing token purpose based on jwt-auth package.",
+    "keywords": ["jwt", "reissue", "concurrency", "token", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "UniSharp Ltd.",
+            "email": "unisharp-service@unisharp.com"
+        }
+    ],
+    "require": {
+        "php": "^5.6.4 || ^7.0",
+        "tymon/jwt-auth": "^1.0",
+        "illuminate/support": ">=5.0.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "mockery/mockery": "0.9.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Unisharp\\JWT": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Unisharp\\JWT\\JWTServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    }
+}
