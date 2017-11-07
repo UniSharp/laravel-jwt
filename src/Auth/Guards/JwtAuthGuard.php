@@ -120,16 +120,6 @@ class JWTAuthGuard implements Guard
         return (bool) $this->attempt($credentials, false);
     }
 
-    public function getTokenByClaims(array $claims)
-    {
-        $factory = new JWTFactory;
-        foreach ($claims as $key => $value) {
-            $factory = $factory->{$key} = $value;
-        }
-
-        return JWTAuth::encode($factory->make());
-    }
-
     /**
      * Create a token for a user.
      *
