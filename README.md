@@ -13,8 +13,33 @@ composer require unisharp/laravel-jwt
 * Add the Service Provider
 
 ```php
+Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 Unisharp\JWT\JWTServiceProvider::class,
 ```
+
+Next, also in the app.php config file, under the aliases array, you may want to add the JWTAuth facade.
+
+```
+'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
+'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory'
+```
+
+Finally, you will want to publish the config using the following command:
+
+```
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\JWTAuthServiceProvider"
+php artisan vendor:publish --provider="Unisharp\JWT\JWTServiceProvider"
+```
+
+Don't forget to set a secret key in the config file!
+
+```
+$ php artisan jwt:generate
+```
+
+this will generate a new random key, which will be used to sign your tokens.
+
+And you're done!
 
 ## Usage
 
