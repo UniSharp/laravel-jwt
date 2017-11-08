@@ -23,6 +23,7 @@
             "Unisharp\\JWT\\": "src/"
         }
     },
+    "minimum-stability": "dev",
     "extra": {
         "laravel": {
             "providers": [
