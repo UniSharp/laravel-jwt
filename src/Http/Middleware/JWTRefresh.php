@@ -3,7 +3,7 @@
 namespace Unisharp\JWT\Http\Middleware;
 
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
@@ -74,7 +74,7 @@ class JWTRefresh
         } catch (TokenExpiredException $e) {
             // If the token is expired, then it will be refreshed and added to the headers
             try {
-                return app(AuthFactory::class)->guard('api')->refresh();
+                return Auth::guard('api')->refresh();
             } catch (TokenExpiredException $e) {
                 throw new UnauthorizedHttpException('jwt-auth', 'Refresh token has expired.');
             }
