@@ -4,7 +4,7 @@ namespace Unisharp\JWT;
 
 use Illuminate\Support\ServiceProvider;
 use Unisharp\JWT\Auth\Guards\JWTAuthGuard;
-use Unisharp\JWT\Http\middleware\JWTRefresh;
+use Unisharp\JWT\Http\Middleware\JWTRefresh;
 
 class JWTServiceProvider extends ServiceProvider
 {
