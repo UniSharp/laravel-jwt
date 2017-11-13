@@ -38,7 +38,7 @@ php artisan vendor:publish --provider="Unisharp\JWT\JWTServiceProvider"
 Don't forget to set a secret key in the config file!
 
 ```
-$ php artisan jwt:generate
+$ php artisan jwt:secret
 ```
 
 this will generate a new random key, which will be used to sign your tokens.
