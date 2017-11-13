@@ -3,6 +3,10 @@ Laravel JWT
 ![php-badge](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)
 [![packagist-badge](https://img.shields.io/packagist/v/unisharp/laravel-jwt.svg)](https://packagist.org/packages/unisharp/laravel-jwt)
 
+## Approach
+
+If you pick `Tymon JWTAuth` as your jwt solution in your project, when you try to refresh your token, the package will blacklist your exchanged token (assume your blacklist feature is enabled). So when your client faces a concurrency use case,  your request might be rejected because that request is sent before your app renews jwt token returned by server. This package caches the refreshed jwt token in a short period to ensure your client side can get correct response even if your request carries an old token in a concurrency case.
+
 ## Installation
 
 * Via Composer
@@ -90,6 +94,7 @@ class ContentController extends Controller
     }
 }
 ```
+> This middleware will automatically refresh jwt token if the existing one has been expired. The new refreshed jwt token will be carried to the response header: `Ahthorization`. The client side needs to replace your expired jwt token with the new one. 
 
 **Note:** The above example assumes you've setup a guard with the name `api` whose driver is `jwt-auth` in your `config/auth.php` file as explained in "Setup Guard Driver" section above.
 
