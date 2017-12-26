@@ -17,9 +17,11 @@ composer require unisharp/laravel-jwt
 * Add the Service Provider
 
 ```php
-Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
 Unisharp\JWT\JWTServiceProvider::class,
 ```
+
+> In Lumen please use `Tymon\JWTAuth\Providers\LumenServiceProvider::class,`
 
 Next, also in the app.php config file, under the aliases array, you may want to add the JWTAuth facade.
 
