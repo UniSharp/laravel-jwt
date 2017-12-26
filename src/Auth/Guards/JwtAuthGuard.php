@@ -42,7 +42,7 @@ class JWTAuthGuard extends JWTGuard
             return null;
         }
 
-        // get cached freshed token if exists for concurrency requests 
+        // get cached freshed token if exists for concurrency requests
         if ($this->getCachedToken()) {
             $this->jwt = $this->jwt->setToken($this->getCachedToken());
         }
@@ -86,8 +86,8 @@ class JWTAuthGuard extends JWTGuard
             $expiresAt = Carbon::now()
                 ->addSeconds(config('laravel_jwt.cache_ttl'));
         }
-        $cachedToken = Cache::put($key, $refreshToken, $expiresAt);
-        $this->cachedToken = $cachedToken;
+        Cache::put($key, $refreshToken, $expiresAt);
+        $this->cachedToken = $refreshToken;
 
         return $this;
     }
