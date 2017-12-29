@@ -64,7 +64,7 @@ class JWTServiceProvider extends ServiceProvider
     protected function registerMiddleware()
     {
         if ($this->isLumen()) {
-            $this->app->routeMiddleware($this->$middlewareAliases);
+            $this->app->routeMiddleware($this->middlewareAliases);
         } else {
             $this->aliasMiddleware();
         }
