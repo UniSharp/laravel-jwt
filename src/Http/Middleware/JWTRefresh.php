@@ -4,10 +4,11 @@ namespace Unisharp\JWT\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JWTRefresh
 {
@@ -49,7 +50,7 @@ class JWTRefresh
      */
     public function checkForToken(Request $request)
     {
-        if (!\JWTAuth::parser()->setRequest($request)->hasToken()) {
+        if (!JWTAuth::parser()->setRequest($request)->hasToken()) {
             throw new UnauthorizedHttpException('jwt-auth', 'Token not provided');
         }
     }
@@ -68,7 +69,7 @@ class JWTRefresh
         $this->checkForToken($request);
 
         try {
-            if (!\JWTAuth::parseToken()->authenticate()) {
+            if (!JWTAuth::parseToken()->authenticate()) {
                 throw new UnauthorizedHttpException('jwt-auth', 'User not found');
             }
         } catch (TokenExpiredException $e) {
