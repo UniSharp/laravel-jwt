@@ -66,6 +66,10 @@ class JWTRefresh
      */
     public function authenticate(Request $request)
     {
+        if (Auth::user()) {
+            return false;
+        }
+
         $this->checkForToken($request);
 
         try {
@@ -75,7 +79,7 @@ class JWTRefresh
         } catch (TokenExpiredException $e) {
             // If the token is expired, then it will be refreshed and added to the headers
             try {
-                return Auth::guard('api')->refresh();
+                return Auth::refresh();
             } catch (TokenExpiredException $e) {
                 throw new UnauthorizedHttpException('jwt-auth', 'Refresh token has expired.');
             }
