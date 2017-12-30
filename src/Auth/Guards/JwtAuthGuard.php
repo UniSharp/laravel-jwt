@@ -48,7 +48,7 @@ class JWTAuthGuard extends JWTGuard
         }
 
         // token validation
-        if ($this->jwt->setRequest($this->request)->getToken() &&
+        if ($this->getToken() &&
             ($payload = $this->jwt->check(true)) &&
             $this->jwt->checkProvider($this->provider->getModel())
         ) {
@@ -56,6 +56,23 @@ class JWTAuthGuard extends JWTGuard
         }
 
         return $this->user;
+    }
+
+    /**
+     * Logout the user, thus invalidating the token.
+     *
+     * @param  bool  $forceForever
+     *
+     * @return void
+     */
+    public function logout($forceForever = false)
+    {
+        if ($this->getToken()) {
+            $this->requireToken()->invalidate($forceForever);
+        }
+
+        $this->user = null;
+        $this->jwt->unsetToken();
     }
 
     /**
