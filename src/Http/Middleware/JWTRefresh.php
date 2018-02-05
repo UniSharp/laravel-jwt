@@ -84,7 +84,7 @@ class JWTRefresh
                 throw new UnauthorizedHttpException('jwt-auth', 'Refresh token has expired.');
             }
         } catch (TokenBlacklistedException $e) {
-            throw new TokenBlacklistedException('jwt-auth', $e->getMessage(), $e, 401);
+            throw new TokenBlacklistedException($e->getMessage(), 401);
         } catch (JWTException $e) {
             throw new UnauthorizedHttpException('jwt-auth', $e->getMessage(), $e, $e->getCode());
         }
