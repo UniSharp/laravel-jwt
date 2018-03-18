@@ -50,7 +50,7 @@ class JWTAuthGuard extends JWTGuard
         // token validation
         if ($this->getToken() &&
             ($payload = $this->jwt->check(true)) &&
-            $this->jwt->checkProvider($this->provider->getModel())
+            $this->validateSubject()
         ) {
             return $this->user = $this->provider->retrieveById($payload['sub']);
         }
@@ -129,6 +129,21 @@ class JWTAuthGuard extends JWTGuard
         $this->setCachedToken($key, $refreshToken);
 
         return $this->cachedToken;
+    }
+    
+    /**
+     * Ensure the JWTSubject matches what is in the token.
+     *
+     * @return  bool
+     */
+    protected function validateSubject()
+    {
+        // If the provider doesn't have the necessary method
+        // to get the underlying model name then allow.
+        if (! method_exists($this->provider, 'getModel')) {
+            return true;
+        }
+        return $this->jwt->checkSubjectModel($this->provider->getModel());
     }
 
     /**
