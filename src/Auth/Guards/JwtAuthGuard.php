@@ -100,8 +100,7 @@ class JWTAuthGuard extends JWTGuard
     public function setCachedToken($key, $refreshToken, $expiresAt = null)
     {
         if (is_null($expiresAt)) {
-            $expiresAt = Carbon::now()
-                ->addSeconds(config('laravel_jwt.cache_ttl'));
+            $expiresAt = (int) (config('laravel_jwt.cache_ttl') / 60);
         }
         Cache::put($key, $refreshToken, $expiresAt);
         $this->cachedToken = $refreshToken;
