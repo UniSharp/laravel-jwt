@@ -3,7 +3,7 @@ namespace Tests;
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Unisharp\JWT\Auth\Guards\JWTAuthGuard;
+use UniSharp\JWT\Auth\Guards\JWTAuthGuard;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Cache;
