@@ -22,7 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "UniSharp\\JWT\\": "src/"
+            "UniSharp\\JWT\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

@@ -13,11 +13,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class JWTTest extends TestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     // https://github.com/laravel/framework/blob/5.5/tests/Auth/AuthGuardTest.php
     public function testRequireToken()
     {
