@@ -2,20 +2,20 @@
 namespace Tests;
 
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
-use UniSharp\JWT\Auth\Guards\JWTAuthGuard;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Carbon\Carbon;
+use PHPUnit\Framework\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use UniSharp\JWT\Auth\Guards\JWTAuthGuard;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class JWTTest extends TestCase
 {
     public function setUp()
     {
         parent::setUp();
-        require_once __DIR__ . '/helpers.php';
     }
 
     // https://github.com/laravel/framework/blob/5.5/tests/Auth/AuthGuardTest.php
@@ -52,9 +52,9 @@ class JWTTest extends TestCase
 
         Cache::shouldReceive('put')
             ->once()
-            ->with('key', 'refreshToken', 'expiresAt')
+            ->with('key', 'newCachedToken', 'expiresAt')
             ->andReturn('newCachedToken');
-        $guard->setCachedToken('key', 'refreshToken', 'expiresAt');
+        $guard->setCachedToken('key', 'newCachedToken', 'expiresAt');
         $this->assertEquals($guard->getCachedToken(), 'newCachedToken');
     }
 
@@ -70,6 +70,10 @@ class JWTTest extends TestCase
         Cache::shouldReceive('put')
             ->once()
             ->andReturn('refreshToken');
+
+        Config::shouldReceive('get')
+          ->with('laravel_jwt.cache_ttl')
+          ->andReturn(60);
 
         JWTAuth::shouldReceive('refresh')
             ->once()

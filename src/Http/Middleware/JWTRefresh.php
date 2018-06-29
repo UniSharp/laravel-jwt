@@ -1,6 +1,6 @@
 <?php
 
-namespace Unisharp\JWT\Http\Middleware;
+namespace UniSharp\JWT\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

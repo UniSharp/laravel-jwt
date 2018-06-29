@@ -1,14 +1,15 @@
 <?php
 
-namespace Unisharp\JWT\Auth\Guards;
+namespace UniSharp\JWT\Auth\Guards;
 
+use Carbon\Carbon;
 use Tymon\JWTAuth\JWT;
 use Tymon\JWTAuth\JWTGuard;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Contracts\Auth\UserProvider;
-use Carbon\Carbon;
 
 class JWTAuthGuard extends JWTGuard
 {
@@ -100,7 +101,7 @@ class JWTAuthGuard extends JWTGuard
     public function setCachedToken($key, $refreshToken, $expiresAt = null)
     {
         if (is_null($expiresAt)) {
-            $expiresAt = (int) (config('laravel_jwt.cache_ttl') / 60);
+            $expiresAt =  ((int) Config::get('laravel_jwt.cache_ttl') / 60);
         }
         Cache::put($key, $refreshToken, $expiresAt);
         $this->cachedToken = $refreshToken;
@@ -129,7 +130,7 @@ class JWTAuthGuard extends JWTGuard
 
         return $this->cachedToken;
     }
-    
+
     /**
      * Ensure the JWTSubject matches what is in the token.
      *
