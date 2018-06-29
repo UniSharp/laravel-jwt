@@ -12,6 +12,12 @@ use Carbon\Carbon;
 
 class JWTTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        require_once __DIR__ . '/helpers.php';
+    }
+
     // https://github.com/laravel/framework/blob/5.5/tests/Auth/AuthGuardTest.php
     public function testRequireToken()
     {
