@@ -12,6 +12,10 @@ Laravel JWT
 
 If you pick `Tymon JWTAuth` as your jwt solution in your project, when you try to refresh your token, the package will blacklist your exchanged token (assume your blacklist feature is enabled). So when your client faces a concurrency use case,  your request might be rejected because that request is sent before your app renews jwt token returned by server. This package caches the refreshed jwt token in a short period to ensure your client side can get correct response even if your request carries an old token in a concurrency case.
 
+### Important Change
+
+We change our namespace Unisharp\JWT to UniSharp\JWT
+
 ## Installation
 
 * Via Composer
@@ -23,7 +27,7 @@ composer require unisharp/laravel-jwt
 
 ```php
 Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-Unisharp\JWT\JWTServiceProvider::class,
+UniSharp\JWT\JWTServiceProvider::class,
 ```
 
 > In Lumen please use `Tymon\JWTAuth\Providers\LumenServiceProvider::class,`
@@ -39,7 +43,7 @@ Finally, you will want to publish the config using the following command:
 
 ```
 php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\JWTAuthServiceProvider"
-php artisan vendor:publish --provider="Unisharp\JWT\JWTServiceProvider"
+php artisan vendor:publish --provider="UniSharp\JWT\JWTServiceProvider"
 ```
 
 Don't forget to set a secret key in the config file!
