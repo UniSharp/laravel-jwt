@@ -1,7 +1,12 @@
 Laravel JWT
 ==========
 ![php-badge](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)
-[![packagist-badge](https://img.shields.io/packagist/v/unisharp/laravel-jwt.svg)](https://packagist.org/packages/unisharp/laravel-jwt)
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Software License][ico-license]](LICENSE.md)
+[![Build Status][ico-travis]][link-travis]
+[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
+[![Quality Score][ico-code-quality]][link-code-quality]
+[![Total Downloads][ico-downloads]][link-downloads]
 
 ## Approach
 
@@ -241,3 +246,18 @@ Get Payload for the given token manually:
 ``` php
 $payload = Auth::setToken('TokenToGetPayload')->getPayload();
 ```
+
+[ico-version]: https://img.shields.io/packagist/v/UniSharp/laravel-jwt.svg?style=flat-square
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/UniSharp/laravel-jwt/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/UniSharp/laravel-jwt.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/UniSharp/laravel-jwt.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/UniSharp/laravel-jwt.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/unisharp/laravel-jwt
+[link-travis]: https://travis-ci.org/UniSharp/laravel-jwt
+[link-scrutinizer]: https://scrutinizer-ci.com/g/UniSharp/laravel-jwt/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/UniSharp/laravel-jwt
+[link-downloads]: https://packagist.org/packages/UniSharp/laravel-jwt
+[link-author]: https://github.com/UniSharp
+[link-contributors]: ../../contributors
