@@ -29,7 +29,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Unisharp\\JWT\\JWTServiceProvider"
+                "UniSharp\\JWT\\JWTServiceProvider"
             ],
             "aliases": {
             }
