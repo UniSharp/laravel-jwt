@@ -1,6 +1,6 @@
 Laravel JWT
 ==========
-![php-badge](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)
+![php-badge][ico-php-version]
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
@@ -251,7 +251,8 @@ Get Payload for the given token manually:
 $payload = Auth::setToken('TokenToGetPayload')->getPayload();
 ```
 
-[ico-version]: https://img.shields.io/packagist/v/UniSharp/laravel-jwt.svg?style=flat-square
+[ico-php-version]: https://img.shields.io/travis/php-v/UniSharp/laravel-jwt.svg
+[ico-version]: https://img.shields.io/packagist/v/unisharp/laravel-jwt.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/UniSharp/laravel-jwt/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/UniSharp/laravel-jwt.svg?style=flat-square
